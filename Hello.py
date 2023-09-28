@@ -1,10 +1,10 @@
 import openai
 import streamlit as st
 
+openai.api_base = "https://oai.langcore.org/v1"
 
 def main():
     st.title('ChatGPT キャッチコピー作成アプリ')
-    
     user_input = st.text_input('キャッチコピーを作成するためのキーワードを入力してください: ')
     
     if st.button('キャッチコピーを生成'):
@@ -13,13 +13,12 @@ def main():
 
 def call_chatgpt_api(input_text):
     try:
-        response = openai.Completion.create(
-            engine="gpt-3.5-turbo",
-            prompt=input_text,
-            temperature=0.7,
-            max_tokens=100,
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "system", "content": "キャッチコピーを考えてください"},
+                      {"role": "user", "content": input_text}]
         )
-        return response.choices[0].text.strip()
+        return response['choices'][0]['message']['content'].strip()
     except Exception as e:
         return f'エラー: キャッチコピーを生成できませんでした。{str(e)}'
 
